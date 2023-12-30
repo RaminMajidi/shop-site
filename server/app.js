@@ -4,6 +4,8 @@ const cookieParser = require("cookie-parser");
 const fileUpload = require("express-fileupload");
 const db = require("./config/DB.js")
 
+const userRoutes = require("./routes/userRoute.js")
+
 
 const app = express()
 app.use(corse({ credentials: false, origin: "*" }))
@@ -15,6 +17,13 @@ app.use(express.static('public'))
 app.get('/', function (req, res) {
     res.send('This message is from the server side')
 })
+
+app.use('/api',userRoutes)
+
+
+
+
+
 
 try {
     db.authenticate();
