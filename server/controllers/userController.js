@@ -35,14 +35,14 @@ exports.signUpUser = async (req, res, next) => {
         const newUser = await User.create({
             email: email,
             password: hashPassword,
-            name:name
+            name: name
         })
         res.status(200).json({
             message: "ثبت نام موفقیت آمیز بود ", user: {
                 email: newUser.email,
                 rol: newUser.rol,
                 id: newUser.id,
-                name:newUser.name
+                name: newUser.name
             }
         })
 
@@ -157,4 +157,35 @@ exports.getAllUser = async (req, res, next) => {
     } catch (error) {
         next(error)
     }
+}
+
+exports.changeUserRol = async (req, res, next) => {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+        let message = await errors.array().map(item => item.msg).join("")
+        return res.status(400).json({ message: message })
+    }
+
+    try {
+        const { id, rol } = req.body
+
+        const user = await User.findOne({
+            where: { id: id }
+        })
+
+        if (!user) {
+            return errorHandler(res, 404, "کاربری یافت نشد !")
+        }
+
+        await User.update(
+            { rol: rol },
+            { where: { id: id } }
+        )
+
+        res.status(200).json({ message: "بروزرسانی موفقیت آمیز بود" })
+        
+    } catch (error) {
+        next(error)
+    }
+
 }

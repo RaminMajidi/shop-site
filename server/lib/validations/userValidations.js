@@ -1,5 +1,6 @@
 const { check } = require('express-validator')
 
+const ROLS = ['ADMIN', 'OPERATOR', 'CUSTOMER']
 
 const postSignUpValidation = [
     check('name', ".فیلد نام اجباری است")
@@ -36,8 +37,19 @@ const postSignInValidation = [
         .trim(),
 ]
 
+const patchRolValidation = [
+    check("rol")
+        .custom((value, { req }) => {
+            if (ROLS.includes(value)) {
+                return true
+            }
+            throw new Error("مقدار وارد شده نامعتبر است !")
+        })
+]
+
 
 module.exports = {
     postSignUpValidation,
-    postSignInValidation
+    postSignInValidation,
+    patchRolValidation
 }

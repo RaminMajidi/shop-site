@@ -4,11 +4,12 @@ const {
     getAllUser,
     signUpUser,
     signInUser,
-    refreshToken
+    refreshToken,
+    changeUserRol
 } = require("../controllers/userController.js")
 
 const {
-    postSignUpValidation, postSignInValidation
+    postSignUpValidation, postSignInValidation, patchRolValidation
 } = require("../lib/validations/userValidations.js")
 
 
@@ -22,6 +23,7 @@ router.get("/token", refreshToken)
 router.get('/users', verifyToken, onlyAdmin, getAllUser)
 router.post('/signup', postSignUpValidation, signUpUser)
 router.post('/signin', postSignInValidation, signInUser)
+router.patch('/user/changeRol', verifyToken, onlyAdmin, patchRolValidation, changeUserRol)
 
 
 
