@@ -9,18 +9,6 @@ const { errorHandler } = require("../lib/utils/errorHandler.js");
 
 
 
-exports.getAllUser = async (req, res, next) => {
-    try {
-        const users = await User.findAll({
-            attributes: ["id", "email", "url", "name", "rol"]
-        })
-        res.status(200).json({ users })
-    } catch (error) {
-        next(error)
-    }
-}
-
-
 exports.signUpUser = async (req, res, next) => {
 
     const errors = validationResult(req)
@@ -29,7 +17,7 @@ exports.signUpUser = async (req, res, next) => {
         return res.status(400).json({ message: message })
     }
 
-    const { email, password } = req.body;
+    const { email, password, name } = req.body;
     try {
         const found = await User.findOne({
             where: {
@@ -47,12 +35,14 @@ exports.signUpUser = async (req, res, next) => {
         const newUser = await User.create({
             email: email,
             password: hashPassword,
+            name:name
         })
         res.status(200).json({
             message: "ثبت نام موفقیت آمیز بود ", user: {
                 email: newUser.email,
                 rol: newUser.rol,
-                id: newUser.id
+                id: newUser.id,
+                name:newUser.name
             }
         })
 
@@ -61,7 +51,6 @@ exports.signUpUser = async (req, res, next) => {
     }
 
 }
-
 
 exports.signInUser = async (req, res, next) => {
     const errors = validationResult(req)
@@ -86,7 +75,7 @@ exports.signInUser = async (req, res, next) => {
             return errorHandler(res, 401, "رمز عبور اشتباه است!")
         }
 
-        const { id, name, rol, url } = user
+        const { id, name, rol } = user
 
         const accessToken = await jwt.sign(
             { id, name, email, rol },
@@ -111,7 +100,7 @@ exports.signInUser = async (req, res, next) => {
         })
 
         return res.status(200).json({
-            user: { id, name, email, rol, accessToken, url },
+            user: { id, name, email, rol, accessToken },
             message: "ورود موفقیت آمیز بود !"
         })
 
@@ -145,15 +134,26 @@ exports.refreshToken = async (req, res, next) => {
                 return errorHandler(res, 401, "نیاز به ورود مجدد !!")
             }
 
-            const { id, name, email, rol, url } = user
+            const { id, name, email, rol } = user
             const accessToken = jwt.sign(
                 { id, name, email, rol },
                 process.env.ACCESS_TOKEN_SECRET,
                 { expiresIn: "10m" }
             )
-            res.status(200).json({ accessToken, url })
+            res.status(200).json({ accessToken })
         })
 
+    } catch (error) {
+        next(error)
+    }
+}
+
+exports.getAllUser = async (req, res, next) => {
+    try {
+        const users = await User.findAll({
+            attributes: ["id", "email", "name", "rol"]
+        })
+        res.status(200).json({ users })
     } catch (error) {
         next(error)
     }
