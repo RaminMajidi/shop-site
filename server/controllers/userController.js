@@ -4,7 +4,9 @@ const jwt = require("jsonwebtoken");
 const path = require("path")
 const fs = require("fs")
 const { validationResult } = require('express-validator');
-const { errorHandler } = require("../lib/utils/errorHandler.js")
+const { errorHandler } = require("../lib/utils/errorHandler.js");
+const { where } = require("sequelize");
+
 
 
 exports.getAllUser = async (req, res, next) => {
@@ -67,9 +69,51 @@ exports.signInUser = async (req, res, next) => {
         let message = await errors.array().map(item => item.msg).join("")
         return res.status(400).json({ message: message })
     }
-    const { email, password } = req.body
+
 
     try {
+        const { email, password } = req.body
+        const user = await User.findOne({
+            where: { email: email }
+        })
+
+        if (!user) {
+            return errorHandler(res, 401, "ایمیل شما نامعتبر است!")
+        }
+
+        const match = await bcrypt.compare(password, user.password)
+        if (!match) {
+            return errorHandler(res, 401, "رمز عبور اشتباه است!")
+        }
+
+        const { id, name, rol, url } = user
+
+        const accessToken = await jwt.sign(
+            { id, name, email, rol },
+            process.env.ACCESS_TOKEN_SECRET,
+            { expiresIn: "10m" }
+        )
+
+        const refreshToken = await jwt.sign(
+            { id, name, email, rol },
+            process.env.REFRESH_TOKEN_SECRET,
+            { expiresIn: "1d" }
+        )
+
+        await User.update(
+            { refresh_token: refreshToken },
+            { where: { id: id } }
+        )
+
+        res.cookie('refreshToken', refreshToken, {
+            httpOnly: true,
+            maxAge: 24 * 60 * 60 * 1000
+        })
+
+        return res.status(200).json({
+            user: { id, name, email, rol, accessToken, url },
+            message: "ورود موفقیت آمیز بود !"
+        })
 
     } catch (error) {
         next(error)
@@ -102,7 +146,7 @@ exports.refreshToken = async (req, res, next) => {
             }
 
             const { id, name, email, rol, url } = user
-            const accessToken =  jwt.sign(
+            const accessToken = jwt.sign(
                 { id, name, email, rol },
                 process.env.ACCESS_TOKEN_SECRET,
                 { expiresIn: "10m" }
