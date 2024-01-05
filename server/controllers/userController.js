@@ -159,7 +159,7 @@ exports.getAllUser = async (req, res, next) => {
     }
 }
 
-exports.changeUserRol = async (req, res, next) => {
+exports.updateUserInfo = async (req, res, next) => {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
         let message = await errors.array().map(item => item.msg).join("")
@@ -167,7 +167,7 @@ exports.changeUserRol = async (req, res, next) => {
     }
 
     try {
-        const { id, rol } = req.body
+        const { id, rol, name, email } = req.body
 
         const user = await User.findOne({
             where: { id: id }
@@ -178,12 +178,12 @@ exports.changeUserRol = async (req, res, next) => {
         }
 
         await User.update(
-            { rol: rol },
+            { rol: rol, name: name, email: email },
             { where: { id: id } }
         )
 
         res.status(200).json({ message: "بروزرسانی موفقیت آمیز بود" })
-        
+
     } catch (error) {
         next(error)
     }
