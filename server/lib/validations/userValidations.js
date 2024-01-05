@@ -1,7 +1,7 @@
 const { check } = require('express-validator')
 
 
-const postSignupValidation = [
+const postSignUpValidation = [
     check('email')
         .isEmail()
         .withMessage(".لطفا یک ایمیل معتبر وارد کنید"),
@@ -20,7 +20,19 @@ const postSignupValidation = [
         .trim()
 ]
 
+const postSignInValidation = [
+    check('email')
+        .isEmail()
+        .withMessage(".لطفا یک ایمیل معتبر وارد کنید"),
+    check('password')
+        .isAlphanumeric()
+        .isLength({ min: 5 })
+        .withMessage(".رمز عبور باید حداقل 5 کاراکتر باشد")
+        .trim(),
+]
+
 
 module.exports = {
-    postSignupValidation
+    postSignUpValidation,
+    postSignInValidation
 }

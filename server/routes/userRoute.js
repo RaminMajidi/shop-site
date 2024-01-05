@@ -2,17 +2,21 @@ const express = require("express");
 
 const {
     getAllUser,
-    signupUser
+    signUpUser,
+    signInUser,
+    refreshToken
 } = require("../controllers/userController.js")
 
 const {
-    postSignupValidation
+    postSignUpValidation, postSignInValidation
 } = require("../lib/validations/userValidations.js")
 
 const router = express.Router()
 
+router.get("/token", refreshToken)
 router.get('/users', getAllUser)
-router.post('/signup', postSignupValidation,signupUser)
+router.post('/signup', postSignUpValidation, signUpUser)
+router.post('/signin', postSignInValidation, signInUser)
 
 
 
