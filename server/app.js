@@ -3,6 +3,8 @@ const corse = require("cors");
 const cookieParser = require("cookie-parser");
 const fileUpload = require("express-fileupload");
 const db = require("./config/DB.js")
+const dotenv = require("dotenv");
+dotenv.config();
 
 const userRoutes = require("./routes/userRoute.js")
 

@@ -5,7 +5,7 @@ const path = require("path")
 const fs = require("fs")
 const { validationResult } = require('express-validator');
 const { errorHandler } = require("../lib/utils/errorHandler.js");
-const { where } = require("sequelize");
+
 
 
 
