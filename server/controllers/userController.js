@@ -5,6 +5,7 @@ const path = require("path")
 const fs = require("fs")
 const { validationResult } = require('express-validator');
 const { errorHandler } = require("../lib/utils/errorHandler.js");
+const { paginationHandler } = require("../lib/utils/paginationHandler.js")
 
 
 
@@ -94,7 +95,7 @@ exports.signInUser = async (req, res, next) => {
             { where: { id: id } }
         )
 
-        res.cookie('refreshToken', refreshToken, {
+        await res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
             maxAge: 24 * 60 * 60 * 1000
         })
@@ -149,11 +150,17 @@ exports.refreshToken = async (req, res, next) => {
 }
 
 exports.getAllUser = async (req, res, next) => {
+
     try {
+        const count = await User.count()
+        const { page, limit, sort, offset, totalPage } = paginationHandler(req, res, count)
         const users = await User.findAll({
+            offset: offset,
+            limit: limit,
+            order: [['createdAt', sort]],
             attributes: ["id", "email", "name", "rol"]
         })
-        res.status(200).json({ users })
+        res.status(200).json({ users, page, totalPage })
     } catch (error) {
         next(error)
     }
