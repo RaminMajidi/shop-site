@@ -4,6 +4,7 @@ const {
     signUpUser,
     signInUser,
     refreshToken,
+    signOutUser,
 } = require("../controllers/authController");
 const {
     postSignUpValidation,
@@ -15,8 +16,9 @@ const router = express.Router()
 
 
 router.get("/token", refreshToken)
-router.post('/signup', postSignUpValidation, signUpUser)
-router.post('/signin', postSignInValidation, signInUser)
+router.post('/signUp', postSignUpValidation, signUpUser)
+router.post('/signIn', postSignInValidation, signInUser)
+router.get('/signOut', postSignInValidation, signOutUser)
 
 
 module.exports = router

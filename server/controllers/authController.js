@@ -97,6 +97,30 @@ exports.signInUser = async (req, res, next) => {
     }
 }
 
+exports.signOutUser = async (req, res, next) => {
+    try {
+        const refreshToken = req.cookies.refreshToken
+        if (!refreshToken) {
+            return errorHandler(res, 400, "درخواست نامعتبر است !")
+        }
+
+        const user = await User.findOne({ where: { refresh_token: refreshToken } })
+        if (!user) {
+            return errorHandler(res, 404, "کاربر یافت نشد !")
+        }
+
+        await User.update(
+            { refresh_token: null },
+            { where: { id: user.id } }
+        )
+
+        res.clearCookie("refreshToken")
+        res.status(200).json({ message: "خروج موفقیت آمیز بود !" })
+    } catch (error) {
+        next(error)
+    }
+}
+
 exports.refreshToken = async (req, res, next) => {
     try {
         const refreshToken = req.cookies.refreshToken
