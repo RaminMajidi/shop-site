@@ -1,6 +1,6 @@
 const User = require("../models/userModel.js")
 const bcrypt = require("bcryptjs")
-const { validationResult } = require('express-validator');
+const { validationHandler } = require("../lib/utils/validationHandler.js")
 const { errorHandler } = require("../lib/utils/errorHandler.js");
 const { paginationHandler } = require("../lib/utils/paginationHandler.js")
 
@@ -57,47 +57,38 @@ exports.deleteUser = async (req, res, next) => {
 }
 
 exports.updateUserInfo = async (req, res, next) => {
-    const errors = validationResult(req)
-    if (!errors.isEmpty()) {
-        let message = await errors.array().map(item => item.msg).join("")
-        return res.status(400).json({ message: message })
-    }
+    const valid = await validationHandler(req, next)
+    if (valid) {
+        try {
+            const { id, rol, name, email } = req.body
 
-    try {
-        const { id, rol, name, email } = req.body
+            const user = await User.findOne({
+                where: { id: id }
+            })
 
-        const user = await User.findOne({
-            where: { id: id }
-        })
+            if (!user) {
+                return errorHandler(res, 404, "کاربری یافت نشد !")
+            }
 
-        if (!user) {
-            return errorHandler(res, 404, "کاربری یافت نشد !")
+            await User.update(
+                { rol: rol, name: name, email: email },
+                { where: { id: id } }
+            )
+
+            res.status(200).json({ message: "بروزرسانی موفقیت آمیز بود" })
+
+        } catch (error) {
+            next(error)
         }
-
-        await User.update(
-            { rol: rol, name: name, email: email },
-            { where: { id: id } }
-        )
-
-        res.status(200).json({ message: "بروزرسانی موفقیت آمیز بود" })
-
-    } catch (error) {
-        next(error)
     }
-
 }
 
 exports.postAddUser = async (req, res, next) => {
-    const errors = validationResult(req)
-    if (!errors.isEmpty()) {
-        let message = await errors.array().map(item => item.msg).join("")
-        return res.status(400).json({ message: message })
-    }
     try {
+        const valid = await validationHandler(req, next)
+        if (valid) {
+            const { email, password, name } = req.body;
 
-
-        const { email, password, name } = req.body;
-     
             const found = await User.findOne({
                 where: {
                     email: email
@@ -125,7 +116,11 @@ exports.postAddUser = async (req, res, next) => {
                 }
             })
 
-        } catch (error) {
-            next(error)
         }
+
+
+
+    } catch (error) {
+        next(error)
     }
+}

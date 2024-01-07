@@ -3,7 +3,6 @@ const { check } = require('express-validator')
 const ROLS = ['ADMIN', 'OPERATOR', 'CUSTOMER']
 
 
-
 const patchUserInfoValidation = [
     check("rol")
         .custom((value, { req }) => {
