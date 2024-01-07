@@ -40,6 +40,21 @@ exports.getUserInfo = async (req, res, next) => {
     }
 }
 
+exports.deleteUser = async (req, res, next) => {
+    try {
+        const user = await User.findOne({ where: { id: req.params.id } })
+        if (!user) {
+            return errorHandler(res, 404, "کاربری یافت نشد !")
+        }
+
+        await User.destroy({ where: { id: req.params.id } })
+        res.status(200).json({ message: "کاربر با موفقیت حذف شد" })
+        
+    } catch (error) {
+        next(error)
+    }
+}
+
 exports.updateUserInfo = async (req, res, next) => {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {

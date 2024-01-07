@@ -3,6 +3,7 @@ const express = require("express");
 const {
     getAllUser,
     getUserInfo,
+    deleteUser,
     updateUserInfo
 } = require("../controllers/userController.js")
 
@@ -18,8 +19,9 @@ const { verifyToken, authorize } = require("../middlewares/auth.js");
 const router = express.Router()
 
 router.get('/userList',verifyToken, authorize('ADMIN'), getAllUser)
-router.patch('/user/info',verifyToken, authorize('ADMIN'), patchUserInfoValidation, updateUserInfo)
 router.get('/user/:id',verifyToken, authorize('ADMIN'), getUserInfo)
+router.delete('/user/:id',verifyToken, authorize('ADMIN'), deleteUser)
+router.patch('/user/info',verifyToken, authorize('ADMIN'), patchUserInfoValidation, updateUserInfo)
 
 
 
