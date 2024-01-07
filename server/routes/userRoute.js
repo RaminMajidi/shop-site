@@ -2,15 +2,11 @@ const express = require("express");
 
 const {
     getAllUser,
-    signUpUser,
-    signInUser,
-    refreshToken,
+    getUserInfo,
     updateUserInfo
 } = require("../controllers/userController.js")
 
 const {
-    postSignUpValidation,
-    postSignInValidation,
     patchUserInfoValidation
 } = require("../lib/validations/userValidations.js")
 
@@ -21,9 +17,9 @@ const { verifyToken, authorize } = require("../middlewares/auth.js");
 
 const router = express.Router()
 
-
-router.get('/users', verifyToken, authorize('ADMIN'), getAllUser)
-router.patch('/user/info', verifyToken, authorize('ADMIN'), patchUserInfoValidation, updateUserInfo)
+router.get('/userList',verifyToken, authorize('ADMIN'), getAllUser)
+router.patch('/user/info',verifyToken, authorize('ADMIN'), patchUserInfoValidation, updateUserInfo)
+router.get('/user/:id',verifyToken, authorize('ADMIN'), getUserInfo)
 
 
 

@@ -21,6 +21,25 @@ exports.getAllUser = async (req, res, next) => {
     }
 }
 
+exports.getUserInfo = async (req, res, next) => {
+    try {
+        const id = req.params.id
+
+        const user = await User.findOne({
+            where: { id: id },
+            attributes: { exclude: ['password', 'refresh_token'] }
+        })
+
+        user ?
+            res.status(200).json({ user })
+            :
+            res.status(404).json({ message: "کاربری یافت نشد !" })
+
+    } catch (error) {
+        next(error)
+    }
+}
+
 exports.updateUserInfo = async (req, res, next) => {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
