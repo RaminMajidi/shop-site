@@ -13,7 +13,7 @@ const postSignUpValidation = [
     check('password')
         .isAlphanumeric()
         .isLength({ min: 5 })
-        .withMessage(".رمز عبور باید حداقل 5 کاراکتر و ترکیبی از اعداد و حروف باشد")
+        .withMessage(".رمز عبور باید حداقل 5 کاراکتر باشد")
         .trim(),
     check("confirmPassword")
         .custom((value, { req }) => {

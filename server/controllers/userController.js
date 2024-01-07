@@ -83,6 +83,36 @@ exports.updateUserInfo = async (req, res, next) => {
     }
 }
 
+exports.updateUserPassword = async (req, res, next) => {
+    const valid = await validationHandler(req, next)
+    if (valid) {
+        try {
+            const { id, password } = req.body
+
+            const user = await User.findOne({
+                where: { id: id }
+            })
+
+            if (!user) {
+                return errorHandler(res, 404, "کاربری یافت نشد !")
+            }
+
+            const salt = await bcrypt.genSalt();
+            const hashPassword = await bcrypt.hash(password, salt)
+
+            await User.update(
+                { password: hashPassword },
+                { where: { id: id } }
+            )
+
+            res.status(200).json({ message: "بروزرسانی موفقیت آمیز بود" })
+
+        } catch (error) {
+            next(error)
+        }
+    }
+}
+
 exports.postAddUser = async (req, res, next) => {
     try {
         const valid = await validationHandler(req, next)

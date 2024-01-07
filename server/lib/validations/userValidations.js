@@ -39,7 +39,23 @@ const postAddUserValidation = [
     check('password')
         .isAlphanumeric()
         .isLength({ min: 5 })
-        .withMessage(".رمز عبور باید حداقل 5 کاراکتر و ترکیبی از اعداد و حروف باشد")
+        .withMessage(".رمز عبور باید حداقل 5 کاراکتر باشد")
+        .trim(),
+    check("confirmPassword")
+        .custom((value, { req }) => {
+            if (value !== req.body.password) {
+                throw new Error(".تکرار رمز عبور و رمز عبور همخوانی ندارد")
+            }
+            return true
+        })
+        .trim()
+]
+
+const patchUserPasswordValidation = [
+    check('password')
+        .isAlphanumeric()
+        .isLength({ min: 5 })
+        .withMessage(".رمز عبور باید حداقل 5 کاراکتر باشد")
         .trim(),
     check("confirmPassword")
         .custom((value, { req }) => {
@@ -54,5 +70,6 @@ const postAddUserValidation = [
 
 module.exports = {
     patchUserInfoValidation,
-    postAddUserValidation
+    postAddUserValidation,
+    patchUserPasswordValidation
 }
