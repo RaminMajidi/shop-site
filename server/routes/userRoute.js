@@ -15,17 +15,17 @@ const {
 } = require("../lib/validations/userValidations.js")
 
 
-const { verifyToken } = require("../middlewares/verifyToken.js");
-const { onlyAdmin } = require("../middlewares/verifyRol.js");
+const { verifyToken, authorize } = require("../middlewares/auth.js");
+
 
 
 const router = express.Router()
 
 router.get("/token", refreshToken)
-router.get('/users', verifyToken, onlyAdmin, getAllUser)
 router.post('/signup', postSignUpValidation, signUpUser)
 router.post('/signin', postSignInValidation, signInUser)
-router.patch('/user/changeRol', verifyToken, onlyAdmin, patchUserInfoValidation, updateUserInfo)
+router.get('/users', verifyToken, authorize('ADMIN'), getAllUser)
+router.patch('/user/info', verifyToken, authorize('ADMIN'), patchUserInfoValidation, updateUserInfo)
 
 
 

@@ -20,3 +20,13 @@ exports.verifyToken = async (req, res, next) => {
     })
 
 }
+
+// Grant access to specific roles
+exports.authorize = (...roles) => {
+    return (req, res, next) => {
+        if (!roles.includes(req.userRol)) {
+            return errorHandler(res, 401, "شما مجوز دسترسی ندارید !")
+        }
+        next();
+    };
+}

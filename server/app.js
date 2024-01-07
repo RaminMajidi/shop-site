@@ -25,6 +25,15 @@ app.use('/api',userRoutes)
 
 
 
+// middleware for set Error handling
+app.use((error, req, res, next) => {
+    const status = error.statusCode || 500;
+    const message = error.message || 'خطایی رخ داده است';
+    res.status(status).json({ message })
+    next();
+})
+//*********************
+
 
 
 try {
