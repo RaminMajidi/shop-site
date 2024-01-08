@@ -6,12 +6,10 @@ const { DataTypes } = Sequelize;
 
 
 const Category = db.define("category", {
-    parentId: {
-        type: DataTypes.INTEGER,
-    },
     title: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
+        unique: true
     }
 },
     {
@@ -20,8 +18,7 @@ const Category = db.define("category", {
 
 )
 
-Category.hasOne(Category)
-Category.belongsTo(Category, { foreignKey: 'parentId' })
+
 
 
 module.exports = Category
