@@ -2,7 +2,7 @@ const { validationHandler } = require("../lib/utils/validationHandler.js")
 const { errorHandler } = require("../lib/utils/errorHandler.js");
 const { paginationHandler } = require("../lib/utils/paginationHandler.js")
 const Category = require("../models/categoryModel.js");
-const { Op } = require('sequelize');
+
 
 
 exports.getCategoryList = async (req, res, next) => {
@@ -19,6 +19,11 @@ exports.getCategoryList = async (req, res, next) => {
             offset: offset,
             limit: limit,
             order: [['createdAt', sort]],
+            // include: [{
+            //     model: Category,
+            //     as: "children",
+            //     attributes: ['title']
+            // }]
         })
         res.status(200).json({ categores, page, totalPage })
 
@@ -33,7 +38,7 @@ exports.postAddCategory = async (req, res, next) => {
         const valid = await validationHandler(req, next)
 
         if (valid) {
-            const { title } = req.body
+            const { title, parentId } = req.body
 
             const found = await Category.findOne({ where: { title: title } })
 
@@ -41,7 +46,9 @@ exports.postAddCategory = async (req, res, next) => {
                 return errorHandler(res, 400, "دسته بندی تکراری است !")
             }
 
-            const category = await Category.create({ title: title })
+            let qury
+            parentId ? qury = { title: title, parentId: +parentId } : qury = { title: title }
+            const category = await Category.create(qury)
 
             res.status(200).json({ category, message: "دسته بندی با موفقیت افزوده شد ." })
         }

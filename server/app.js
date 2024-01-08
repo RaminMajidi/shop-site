@@ -42,7 +42,7 @@ app.use((error, req, res, next) => {
 
 try {
     db.authenticate();
-    // db.sync()
+    db.sync()
     console.log("DataBase conencted")
     app.listen(5000, () => {
         console.log("server is running")

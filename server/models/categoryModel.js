@@ -18,7 +18,7 @@ const Category = db.define("category", {
 
 )
 
-
+Category.hasOne(Category, { as: 'children', foreignKey: 'parentId', useJunctionTable: false })
 
 
 module.exports = Category
