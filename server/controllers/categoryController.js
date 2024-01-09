@@ -2,7 +2,7 @@ const { validationHandler } = require("../lib/utils/validationHandler.js")
 const { errorHandler } = require("../lib/utils/errorHandler.js");
 const { paginationHandler } = require("../lib/utils/paginationHandler.js")
 const Category = require("../models/categoryModel.js");
-
+const { Op } = require("sequelize")
 
 
 exports.getCategoryList = async (req, res, next) => {
@@ -13,17 +13,35 @@ exports.getCategoryList = async (req, res, next) => {
             return res.status(200).json({ categores: [] })
         }
 
+        const categores = await Category.findAll({
+            where: { parentId: { [Op.is]: null } },
+            include: [{
+                model: Category,
+                as: "children",
+                attributes: ['id', 'title', 'parentId'],
+            }],
+            attributes: ['id', 'title', 'parentId']
+        })
+        res.status(200).json({ categores })
 
+    } catch (error) {
+        next(error)
+    }
+}
+
+exports.getAllCategory = async (req, res, next) => {
+    try {
+        const count = await Category.count()
+        if (!count) {
+            return res.status(200).json({ page: 0, totalPage: 0, categores: [] })
+        }
         const { page, limit, sort, offset, totalPage } = paginationHandler(req, res, count)
         const categores = await Category.findAll({
             offset: offset,
             limit: limit,
-            order: [['createdAt', sort]],
-            // include: [{
-            //     model: Category,
-            //     as: "children",
-            //     attributes: ['title']
-            // }]
+            order: [['id', sort]],
+       
+            attributes: ['id', 'title', 'parentId']
         })
         res.status(200).json({ categores, page, totalPage })
 
@@ -31,6 +49,7 @@ exports.getCategoryList = async (req, res, next) => {
         next(error)
     }
 }
+
 
 exports.postAddCategory = async (req, res, next) => {
 
@@ -46,11 +65,21 @@ exports.postAddCategory = async (req, res, next) => {
                 return errorHandler(res, 400, "دسته بندی تکراری است !")
             }
 
-            let qury
-            parentId ? qury = { title: title, parentId: +parentId } : qury = { title: title }
-            const category = await Category.create(qury)
+            if (parentId) {
+                const checkParent = await Category.findOne({
+                    where: { id: parentId, parentId: { [Op.is]: true } }
+                })
+                if (checkParent) {
+                    return res.status(400).json({ message: "دسته والد نامعتبر است !" })
+                }
 
-            res.status(200).json({ category, message: "دسته بندی با موفقیت افزوده شد ." })
+                let qury
+                parentId ? qury = { title: title, parentId: +parentId } : qury = { title: title }
+                const category = await Category.create(qury)
+
+                res.status(200).json({ category, message: "دسته بندی با موفقیت افزوده شد ." })
+            }
+
         }
 
 
