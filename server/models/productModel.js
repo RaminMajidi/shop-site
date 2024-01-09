@@ -43,8 +43,6 @@ const Product = db.define("product", {
         type: DataTypes.SMALLINT,
         defaultValue: 0
     }
-
-
 },
     {
         freezeTableName: true,
