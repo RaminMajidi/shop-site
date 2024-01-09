@@ -29,6 +29,7 @@ exports.getCategoryList = async (req, res, next) => {
     }
 }
 
+
 exports.getAllCategory = async (req, res, next) => {
     try {
         const count = await Category.count()
@@ -40,10 +41,22 @@ exports.getAllCategory = async (req, res, next) => {
             offset: offset,
             limit: limit,
             order: [['id', sort]],
-       
+
             attributes: ['id', 'title', 'parentId']
         })
         res.status(200).json({ categores, page, totalPage })
+
+    } catch (error) {
+        next(error)
+    }
+}
+
+exports.getCategoryById = async (req, res, next) => {
+    try {
+        console.log(req.params);
+        const id = req.params.id
+        const category = await Category.findByPk(id)
+        res.status(200).json({ category })
 
     } catch (error) {
         next(error)

@@ -2,7 +2,8 @@ const express = require("express");
 const {
     getCategoryList,
     postAddCategory,
-    getAllCategory
+    getAllCategory,
+    getCategoryById
 } = require("../controllers/categoryController");
 const {
     postCategoryValidation
@@ -15,7 +16,8 @@ const router = express.Router()
 
 router.get('/categoryList', getCategoryList)
 router.get('/allCategory', getAllCategory)
-router.post('/addCategory',verifyToken,authorize('ADMIN','OPERATOR'), postCategoryValidation, postAddCategory)
+router.get('/Category/:id', verifyToken, authorize('ADMIN', 'OPERATOR'), getCategoryById)
+router.post('/addCategory', verifyToken, authorize('ADMIN', 'OPERATOR'), postCategoryValidation, postAddCategory)
 
 
 module.exports = router
