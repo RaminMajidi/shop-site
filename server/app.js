@@ -2,6 +2,7 @@ const express = require('express')
 const corse = require("cors");
 const cookieParser = require("cookie-parser");
 const fileUpload = require("express-fileupload");
+
 const db = require("./config/DB.js")
 const dotenv = require("dotenv");
 dotenv.config();
@@ -19,14 +20,17 @@ app.use(cookieParser());
 app.use(fileUpload());
 app.use(express.static('public'))
 
+
+
+
 app.get('/', function (req, res) {
     res.send('This message is from the server side')
 })
 
-app.use('/api',userRoutes)
-app.use('/api',authRoutes)
-app.use('/api',categoryRoutes)
-app.use('/api',productRoutes)
+app.use('/api', userRoutes)
+app.use('/api', authRoutes)
+app.use('/api', categoryRoutes)
+app.use('/api', productRoutes)
 
 
 

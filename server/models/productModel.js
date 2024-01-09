@@ -19,10 +19,6 @@ const Product = db.define("product", {
         type: DataTypes.STRING,
         allowNull: false
     },
-    metaTitle: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
     desc: {
         type: DataTypes.TEXT,
         allowNull: false
