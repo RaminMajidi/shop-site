@@ -51,13 +51,26 @@ exports.getAllCategory = async (req, res, next) => {
     }
 }
 
+
 exports.getCategoryById = async (req, res, next) => {
     try {
-        console.log(req.params);
         const id = req.params.id
         const category = await Category.findByPk(id)
         res.status(200).json({ category })
+    } catch (error) {
+        next(error)
+    }
+}
 
+
+exports.deleletCategory = async (req, res, next) => {
+    try {
+        const id = req.params.id
+        const result = await Category.destroy({ where: { id: id } })
+        if (result) {
+            return res.status(200).json({ message: "حذف دسته بندی با موفقیت انجام شد !" })
+        }
+        res.status(400).json({ message: "دیتای ارسالی نامعتبر است !" })
     } catch (error) {
         next(error)
     }
