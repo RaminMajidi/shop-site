@@ -98,17 +98,52 @@ exports.postAddCategory = async (req, res, next) => {
                 if (checkParent) {
                     return res.status(400).json({ message: "دسته والد نامعتبر است !" })
                 }
-
-                let qury
-                parentId ? qury = { title: title, parentId: +parentId } : qury = { title: title }
-                const category = await Category.create(qury)
-
-                res.status(200).json({ category, message: "دسته بندی با موفقیت افزوده شد ." })
             }
+
+
+            let qury
+            parentId ? qury = { title: title, parentId: +parentId } : qury = { title: title }
+            const category = await Category.create(qury)
+
+            res.status(200).json({ category, message: "دسته بندی با موفقیت افزوده شد ." })
 
         }
 
 
+    } catch (error) {
+        next(error)
+    }
+}
+
+
+exports.updateCategory = async (req, res, next) => {
+    try {
+        const valid = await validationHandler(req, next)
+
+        if (valid) {
+            const { id, title, parentId } = req.body
+
+            const found = await Category.findOne({ where: { title: title } })
+
+            if (found && found.id != id) {
+                return errorHandler(res, 400, "دسته بندی تکراری است !")
+            }
+
+            if (parentId) {
+                const checkParent = await Category.findOne({
+                    where: { id: parentId, parentId: { [Op.is]: true } }
+                })
+                if (checkParent) {
+                    return res.status(400).json({ message: "دسته والد نامعتبر است !" })
+                }
+            }
+
+            let qury
+            parentId ? qury = { title: title, parentId: +parentId } : qury = { title: title }
+            const category = await Category.update(qury, { where: { id: id } })
+
+            res.status(200).json({ message: "دسته بندی با موفقیت بروزرسانی شد ." })
+        }
     } catch (error) {
         next(error)
     }

@@ -4,7 +4,8 @@ const {
     postAddCategory,
     getAllCategory,
     getCategoryById,
-    deleletCategory
+    deleletCategory,
+    updateCategory
 } = require("../controllers/categoryController");
 const {
     postCategoryValidation
@@ -20,6 +21,7 @@ router.get('/allCategory', getAllCategory)
 router.get('/category/:id', verifyToken, authorize('ADMIN', 'OPERATOR'), getCategoryById)
 router.delete('/category/:id', verifyToken, authorize('ADMIN', 'OPERATOR'), deleletCategory)
 router.post('/addCategory', verifyToken, authorize('ADMIN', 'OPERATOR'), postCategoryValidation, postAddCategory)
+router.patch('/updateCategory', verifyToken, authorize('ADMIN', 'OPERATOR'), postCategoryValidation, updateCategory)
 
 
 module.exports = router
