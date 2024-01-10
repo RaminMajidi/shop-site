@@ -168,3 +168,55 @@ exports.updateProduct = async (req, res, next) => {
         next(error)
     }
 }
+
+
+exports.updateProductImg = async (req, res, next) => {
+    try {
+        const productId = req.params.id
+        const product = await Product.findByPk(productId)
+        if (!product) {
+            return errorHandler(res, 404, "محصول یافت نشد !")
+        }
+
+        const file = req.files.file
+        const fileSize = file.data.length
+        const ext = path.extname(file.name)
+        let dateNow = Math.round(Date.now())
+        const fileName = dateNow + ext
+        const allowedType = ['.jpg', '.jpeg', '.png']
+
+        if (!allowedType.includes(ext.toLowerCase())) {
+            return errorHandler(res, 401, 'فرمت فایل نامعتبر است فقط فرمت * .jpg .png .jpeg')
+        }
+
+        if (fileSize > 1000000) {
+            return errorHandler(res, 406, 'حجم عکس نباید بیشتر از 1 مگابایت باشد')
+        }
+
+        const filePath = `./public/images/products/${product.image}`
+        fs.unlinkSync(filePath)
+        file.mv(`./public/images/products/${fileName}`, async (err) => {
+            if (err) {
+                return errorHandler(res, 501, err)
+            }
+        })
+
+        const userId = req.userId
+        const url = `${req.protocol}://${req.get('host')}/images/products/${fileName}`;
+
+        await Product.update({
+            userId: userId,
+            image: fileName,
+            url: url
+        },
+            {
+                where: { id: productId }
+            }
+        )
+
+        res.status(200).json({ message: "عکس محصول بروزرسانی شد ." })
+
+    } catch (error) {
+        next(error)
+    }
+}

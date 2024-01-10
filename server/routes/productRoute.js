@@ -6,7 +6,8 @@ const {
     getProductById,
     getProductInfo,
     getProductByCatId,
-    updateProduct
+    updateProduct,
+    updateProductImg
 } = require("../controllers/productController.js");
 
 
@@ -25,6 +26,7 @@ router.get('/products/category/:id', getProductByCatId)
 router.get('/productInfo/:id',verifyToken, authorize('ADMIN', 'OPERATOR'), getProductInfo)
 router.post('/addProduct', verifyToken, authorize('ADMIN', 'OPERATOR'), postProductValidation, postAddProduct)
 router.put('/updateProduct/:id', verifyToken, authorize('ADMIN', 'OPERATOR'), postProductValidation, updateProduct)
+router.patch('/product/img/:id', verifyToken, authorize('ADMIN', 'OPERATOR'), updateProductImg)
 
 
 
