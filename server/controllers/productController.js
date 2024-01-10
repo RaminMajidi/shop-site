@@ -3,7 +3,8 @@ const { errorHandler } = require("../lib/utils/errorHandler.js");
 const { paginationHandler } = require("../lib/utils/paginationHandler.js")
 const Product = require("../models/productModel.js")
 const path = require('path')
-const fs = require('fs')
+const fs = require('fs');
+const Category = require("../models/categoryModel.js");
 
 
 
@@ -15,7 +16,13 @@ exports.getAllProduct = async (req, res, next) => {
             offset: offset,
             limit: limit,
             order: [['createdAt', sort]],
-        })
+            attributes: { exclude: ['userId', 'image', 'desc', 'createdAt', 'updatedAt'] },
+            include: [{
+                model: Category,
+                attributes: ['id', 'title', 'parentId'],
+            }],
+        }
+        )
         res.status(200).json({ products, page, totalPage })
     } catch (error) {
         next(error)
