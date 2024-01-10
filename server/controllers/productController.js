@@ -48,6 +48,26 @@ exports.getProductById = async (req, res, next) => {
 }
 
 
+exports.getProductByCatId = async (req, res, next) => {
+    console.log("OOOOOkKKKKK");
+    try {
+        const catId = req.params.id
+        console.log(catId);
+        const products = await Product.findAll({
+            where: { categoryId: catId },
+            attributes: { exclude: ['userId', 'image', 'createdAt', 'updatedAt'] },
+            include: [{
+                model: Category,
+                attributes: ['id', 'title', 'parentId'],
+            }]
+        })
+        res.status(200).json({ products })
+    } catch (error) {
+        next(error)
+    }
+}
+
+
 exports.getProductInfo = async (req, res, next) => {
     try {
         const id = req.params.id

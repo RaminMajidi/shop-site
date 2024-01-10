@@ -4,7 +4,8 @@ const {
     getAllProduct,
     postAddProduct,
     getProductById,
-    getProductInfo
+    getProductInfo,
+    getProductByCatId
 } = require("../controllers/productController.js");
 
 
@@ -19,6 +20,7 @@ const router = express.Router()
 
 router.get('/allProduct', getAllProduct)
 router.get('/product/:id', getProductById)
+router.get('/products/category/:id', getProductByCatId)
 router.get('/productInfo/:id',verifyToken, authorize('ADMIN', 'OPERATOR'), getProductInfo)
 router.post('/addProduct', verifyToken, authorize('ADMIN', 'OPERATOR'), postProductValidation, postAddProduct)
 
