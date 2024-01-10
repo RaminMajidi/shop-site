@@ -2,7 +2,9 @@ const express = require("express");
 
 const {
     getAllProduct,
-    postAddProduct
+    postAddProduct,
+    getProductById,
+    getProductInfo
 } = require("../controllers/productController.js");
 
 
@@ -16,6 +18,8 @@ const { postProductValidation } = require("../lib/validations/productValidation.
 const router = express.Router()
 
 router.get('/allProduct', getAllProduct)
+router.get('/product/:id', getProductById)
+router.get('/productInfo/:id',verifyToken, authorize('ADMIN', 'OPERATOR'), getProductInfo)
 router.post('/addProduct', verifyToken, authorize('ADMIN', 'OPERATOR'), postProductValidation, postAddProduct)
 
 

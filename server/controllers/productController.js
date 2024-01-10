@@ -5,7 +5,7 @@ const Product = require("../models/productModel.js")
 const path = require('path')
 const fs = require('fs');
 const Category = require("../models/categoryModel.js");
-
+const User = require("../models/userModel.js")
 
 
 exports.getAllProduct = async (req, res, next) => {
@@ -24,6 +24,46 @@ exports.getAllProduct = async (req, res, next) => {
         }
         )
         res.status(200).json({ products, page, totalPage })
+    } catch (error) {
+        next(error)
+    }
+}
+
+
+exports.getProductById = async (req, res, next) => {
+    try {
+        const id = req.params.id
+        const product = await Product.findOne({
+            where: { id: id },
+            attributes: { exclude: ['userId', 'image', 'createdAt', 'updatedAt'] },
+            include: [{
+                model: Category,
+                attributes: ['id', 'title', 'parentId'],
+            }]
+        })
+        res.status(200).json({ product })
+    } catch (error) {
+        next(error)
+    }
+}
+
+
+exports.getProductInfo = async (req, res, next) => {
+    try {
+        const id = req.params.id
+        const product = await Product.findOne({
+            where: { id: id },
+            include: [{
+                model: Category,
+                attributes: ['id', 'title', 'parentId'],
+            },
+            {
+                model: User,
+                attributes: ['id', 'name', 'rol'],
+            }
+            ]
+        })
+        res.status(200).json({ product })
     } catch (error) {
         next(error)
     }
