@@ -5,7 +5,8 @@ const {
     postAddProduct,
     getProductById,
     getProductInfo,
-    getProductByCatId
+    getProductByCatId,
+    updateProduct
 } = require("../controllers/productController.js");
 
 
@@ -23,6 +24,7 @@ router.get('/product/:id', getProductById)
 router.get('/products/category/:id', getProductByCatId)
 router.get('/productInfo/:id',verifyToken, authorize('ADMIN', 'OPERATOR'), getProductInfo)
 router.post('/addProduct', verifyToken, authorize('ADMIN', 'OPERATOR'), postProductValidation, postAddProduct)
+router.put('/updateProduct/:id', verifyToken, authorize('ADMIN', 'OPERATOR'), postProductValidation, updateProduct)
 
 
 

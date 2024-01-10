@@ -5,7 +5,8 @@ const Product = require("../models/productModel.js")
 const path = require('path')
 const fs = require('fs');
 const Category = require("../models/categoryModel.js");
-const User = require("../models/userModel.js")
+const User = require("../models/userModel.js");
+const { where } = require("sequelize");
 
 
 exports.getAllProduct = async (req, res, next) => {
@@ -49,10 +50,8 @@ exports.getProductById = async (req, res, next) => {
 
 
 exports.getProductByCatId = async (req, res, next) => {
-    console.log("OOOOOkKKKKK");
     try {
         const catId = req.params.id
-        console.log(catId);
         const products = await Product.findAll({
             where: { categoryId: catId },
             attributes: { exclude: ['userId', 'image', 'createdAt', 'updatedAt'] },
@@ -131,6 +130,40 @@ exports.postAddProduct = async (req, res, next) => {
                 res.status(200).json({ product, message: "محصول با موفقیت افزوده شد ." })
             })
         }
+    } catch (error) {
+        next(error)
+    }
+}
+
+
+exports.updateProduct = async (req, res, next) => {
+    try {
+        const valid = await validationHandler(req, next)
+        if (valid) {
+            const productId = req.params.id
+
+            const product = await Product.findByPk(productId)
+            if (!product) {
+                return errorHandler(res, 404, "محصولی یافت نشد !")
+            }
+            const userId = req.userId
+            const { categoryId, title, desc, price, quantity } = req.body
+
+            await Product.update({
+                userId: userId,
+                categoryId: categoryId,
+                title: title,
+                desc: desc,
+                price: price,
+                quantity: quantity
+            },
+                {
+                    where: { id: productId }
+                }
+            )
+            res.status(200).json({ message: "بروزرسانی محصول با موفقیت انجام شد" })
+        }
+
     } catch (error) {
         next(error)
     }
