@@ -6,7 +6,7 @@ const path = require('path')
 const fs = require('fs');
 const Category = require("../models/categoryModel.js");
 const User = require("../models/userModel.js");
-const { where } = require("sequelize");
+
 
 
 exports.getAllProduct = async (req, res, next) => {
@@ -215,6 +215,25 @@ exports.updateProductImg = async (req, res, next) => {
         )
 
         res.status(200).json({ message: "عکس محصول بروزرسانی شد ." })
+
+    } catch (error) {
+        next(error)
+    }
+}
+
+
+exports.deleteProduct = async (req, res, next) => {
+    try {
+        const productId = req.params.id
+        const product = await Product.findByPk(productId)
+        if (!product) {
+            return errorHandler(res, 404, "محصول یافت نشد !")
+        }
+
+        const filePath = `./public/images/products/${product.image}`
+        fs.unlinkSync(filePath)
+        await Product.destroy({ where: { id: productId } })
+        res.status(200).json({ message: "محصول با موفقیت حذف شد ." })
 
     } catch (error) {
         next(error)
