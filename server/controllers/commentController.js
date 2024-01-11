@@ -1,13 +1,7 @@
 const { validationHandler } = require("../lib/utils/validationHandler.js")
 const { errorHandler } = require("../lib/utils/errorHandler.js");
 const { paginationHandler } = require("../lib/utils/paginationHandler.js")
-const Product = require("../models/productModel.js")
-const path = require('path')
-const fs = require('fs');
-const Category = require("../models/categoryModel.js");
-const User = require("../models/userModel.js");
 const Comment = require("../models/commentModel.js");
-
 
 
 exports.getCommentList = async (req, res, next) => {
@@ -77,7 +71,8 @@ exports.commentIsActive = async (req, res, next) => {
     try {
         const valid = validationHandler(req, next)
         if (valid) {
-            const { id, isActive } = req.body
+            const id = req.params.id
+            const { isActive } = req.body
 
             const comment = await Comment.findByPk(id)
             if (!comment) {
@@ -89,6 +84,22 @@ exports.commentIsActive = async (req, res, next) => {
             )
             res.status(200).json({ message: "وضعیت نظر بروزرسانی شد ." })
         }
+
+    } catch (error) {
+        next(error)
+    }
+}
+
+
+exports.deleteComment = async (req, res, next) => {
+    try {
+        const comment = await Comment.findOne({ where: { id: req.params.id } })
+        if (!comment) {
+            return errorHandler(res, 404, "آیتمی یافت نشد !")
+        }
+
+        await Comment.destroy({ where: { id: req.params.id } })
+        res.status(200).json({ message: "نظر با موفقیت حذف شد" })
 
     } catch (error) {
         next(error)
