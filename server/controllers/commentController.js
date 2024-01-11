@@ -25,3 +25,17 @@ exports.getCommentList = async (req, res, next) => {
         next(error)
     }
 }
+
+
+exports.getCommentProduct = async (req, res, next) => {
+    try {
+        const productId = req.query.id
+        const comments = await Comment.findAll({
+            where: { productId: productId },
+            order: [['createdAt']],
+        })
+        res.status(200).json({ comments })
+    } catch (error) {
+        next(error)
+    }
+}
