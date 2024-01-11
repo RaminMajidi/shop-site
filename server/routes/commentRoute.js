@@ -7,7 +7,7 @@ const {
 const { verifyToken, authorize } = require("../middlewares/auth.js");
 const router = express.Router()
 
-router.get('/commentList', getCommentList)
+router.get('/commentList',verifyToken,authorize('ADMIN','OPERATOR'), getCommentList)
 
 
 module.exports = router
