@@ -2,17 +2,19 @@ const express = require("express");
 const {
     getCommentList,
     getCommentProduct,
-    postComment
+    postComment,
+    commentIsActive
 } = require("../controllers/commentController.js");
 
 
 const { verifyToken, authorize } = require("../middlewares/auth.js");
-const { postCommentValidation } = require("../lib/validations/commentValidation.js");
+const { postCommentValidation, patchCommentValidation } = require("../lib/validations/commentValidation.js");
 const router = express.Router()
 
-router.get('/commentList', verifyToken, authorize('ADMIN', 'OPERATOR'), getCommentList)
 router.get('/comment/product', getCommentProduct)
-router.post('/comment', verifyToken, authorize('CUSTOMER'),postCommentValidation, postComment)
+router.get('/commentList', verifyToken, authorize('ADMIN', 'OPERATOR'), getCommentList)
+router.post('/comment', verifyToken, authorize('CUSTOMER'), postCommentValidation, postComment)
+router.patch('/comment', verifyToken, authorize('ADMIN', 'OPERATOR'), patchCommentValidation,commentIsActive)
 
 
 module.exports = router

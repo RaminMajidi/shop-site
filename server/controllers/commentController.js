@@ -6,7 +6,7 @@ const path = require('path')
 const fs = require('fs');
 const Category = require("../models/categoryModel.js");
 const User = require("../models/userModel.js");
-const Comment = require("../models/commentModel.js")
+const Comment = require("../models/commentModel.js");
 
 
 
@@ -31,7 +31,7 @@ exports.getCommentProduct = async (req, res, next) => {
     try {
         const productId = req.query.id
         const comments = await Comment.findAll({
-            where: { productId: productId },
+            where: { productId: productId, isActive: true },
             order: [['createdAt']],
         })
         res.status(200).json({ comments })
@@ -67,6 +67,29 @@ exports.postComment = async (req, res, next) => {
             res.status(201).json({ message: "نظر شما با موفقیت ارسال شد و بعد از تایید مدیریت به نمایش درخواهد آمد." })
 
         }
+    } catch (error) {
+        next(error)
+    }
+}
+
+
+exports.commentIsActive = async (req, res, next) => {
+    try {
+        const valid = validationHandler(req, next)
+        if (valid) {
+            const { id, isActive } = req.body
+
+            const comment = await Comment.findByPk(id)
+            if (!comment) {
+                return errorHandler(res, 404, "آیتمی یافت نشد !")
+            }
+            await Comment.update(
+                { isActive: isActive },
+                { where: { id: id } }
+            )
+            res.status(200).json({ message: "وضعیت نظر بروزرسانی شد ." })
+        }
+
     } catch (error) {
         next(error)
     }

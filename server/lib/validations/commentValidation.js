@@ -15,7 +15,14 @@ const postCommentValidation = [
         .withMessage("ثبت امتیاز بین 1تا5 اجباری است !"),
 ]
 
+const patchCommentValidation = [
+    check("isActive")
+        .isBoolean()
+        .withMessage("وضعیت باید دارای یکی از مقادیر true  یا  false  باشد ."),
+]
+
 
 module.exports = {
-    postCommentValidation
+    postCommentValidation,
+    patchCommentValidation
 }
