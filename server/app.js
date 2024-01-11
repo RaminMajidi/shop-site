@@ -11,6 +11,7 @@ const userRoutes = require("./routes/userRoute.js")
 const authRoutes = require("./routes/authRoute.js")
 const categoryRoutes = require("./routes/categoryRoute.js")
 const productRoutes = require("./routes/productRoute.js")
+const commentRoutes = require("./routes/commentRoute.js")
 
 
 const app = express()
@@ -31,6 +32,7 @@ app.use('/api', userRoutes)
 app.use('/api', authRoutes)
 app.use('/api', categoryRoutes)
 app.use('/api', productRoutes)
+app.use('/api', commentRoutes)
 
 
 
