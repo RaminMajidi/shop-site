@@ -10,6 +10,10 @@ const Comments = db.define('comments', {
         type: DataTypes.INTEGER,
         allowNull: false
     },
+    userId: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
     userName: {
         type: DataTypes.STRING,
         allowNull: false
@@ -20,7 +24,7 @@ const Comments = db.define('comments', {
     },
     score: {
         type: DataTypes.INTEGER,
-        validate: { min: 0, max: 5 }
+        validate: { min: 1, max: 5 }
     },
     isActive: {
         type: DataTypes.BOOLEAN,

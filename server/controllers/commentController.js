@@ -39,3 +39,35 @@ exports.getCommentProduct = async (req, res, next) => {
         next(error)
     }
 }
+
+
+exports.postComment = async (req, res, next) => {
+    try {
+        const valid = validationHandler(req, next)
+        if (valid) {
+            const userName = req.userName
+            const userId = req.userId
+            const { productId, description, score } = req.body
+
+            const comment = await Comment.findOne({
+                where: { productId: productId, userId: userId }
+            })
+            if (comment) {
+                return errorHandler(res, 403, "امکان ثبت نظر مجدد شما برای این محصول وجود ندارد !")
+            }
+
+            await Comment.create({
+                productId: productId,
+                userId: userId,
+                userName: userName,
+                description: description,
+                score: score
+            })
+
+            res.status(201).json({ message: "نظر شما با موفقیت ارسال شد و بعد از تایید مدیریت به نمایش درخواهد آمد." })
+
+        }
+    } catch (error) {
+        next(error)
+    }
+}
