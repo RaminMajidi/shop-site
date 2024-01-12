@@ -5,7 +5,8 @@ const {
     getAllCategory,
     getCategoryById,
     deleletCategory,
-    updateCategory
+    updateCategory,
+    getMainCategores
 } = require("../controllers/categoryController");
 const {
     postCategoryValidation
@@ -17,7 +18,8 @@ const router = express.Router()
 
 
 router.get('/categoryList', getCategoryList)
-router.get('/allCategory', getAllCategory)
+router.get('/allCategory',verifyToken, authorize('ADMIN', 'OPERATOR'), getAllCategory)
+router.get('/mainCategores',verifyToken, authorize('ADMIN', 'OPERATOR'), getMainCategores)
 router.get('/category/:id', verifyToken, authorize('ADMIN', 'OPERATOR'), getCategoryById)
 router.delete('/category/:id', verifyToken, authorize('ADMIN', 'OPERATOR'), deleletCategory)
 router.post('/addCategory', verifyToken, authorize('ADMIN', 'OPERATOR'), postCategoryValidation, postAddCategory)

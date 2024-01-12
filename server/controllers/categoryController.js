@@ -16,9 +16,10 @@ exports.getCategoryList = async (req, res, next) => {
         const categores = await Category.findAll({
             where: { parentId: { [Op.is]: null } },
             include: [{
+                where: { id: { [Op.is]: true } },
                 model: Category,
                 as: "children",
-                attributes: ['id', 'title', 'parentId'],
+                attributes: ['id', 'title'],
             }],
             attributes: ['id', 'title', 'parentId']
         })
@@ -62,6 +63,18 @@ exports.getCategoryById = async (req, res, next) => {
     }
 }
 
+
+exports.getMainCategores = async (req, res, next) => {
+    try {
+        const mainCategores = await Category.findAll({
+            where: { parentId: { [Op.is]: null } }
+        })
+        res.status(200).json({ mainCategores })
+
+    } catch (error) {
+        next(error)
+    }
+}
 
 exports.deleletCategory = async (req, res, next) => {
     try {
