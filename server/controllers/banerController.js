@@ -24,6 +24,21 @@ exports.getAllBaner = async (req, res, next) => {
 }
 
 
+exports.getBanerList = async (req, res, next) => {
+    try {
+        let limit = +req.query.limit < 20 ? +req.query.limit : +req.query.limit > 20 ? 20 : 20
+        const baners = await Baner.findAll({
+            limit: limit,
+        }
+        )
+        res.status(200).json({ baners })
+
+    } catch (error) {
+        next(error)
+    }
+}
+
+
 exports.postNewBaner = async (req, res, next) => {
     try {
 
