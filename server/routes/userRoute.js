@@ -13,7 +13,7 @@ const {
     patchUserInfoValidation,
     postAddUserValidation,
     patchUserPasswordValidation
-} = require("../lib/validations/userValidations.js")
+} = require("../lib/validations/userValidation.js")
 
 
 const { verifyToken, authorize } = require("../middlewares/auth.js");

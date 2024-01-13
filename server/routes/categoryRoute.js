@@ -10,7 +10,7 @@ const {
 } = require("../controllers/categoryController");
 const {
     postCategoryValidation
-} = require("../lib/validations/categoryValidations");
+} = require("../lib/validations/categoryValidation.js");
 
 const { verifyToken, authorize } = require("../middlewares/auth.js");
 
