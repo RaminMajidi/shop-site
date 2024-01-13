@@ -137,3 +137,20 @@ exports.updateBaner = async (req, res, next) => {
 
     }
 }
+
+
+exports.deleteBaner = async (req, res, next) => {
+    try {
+        const banerId = req.params.id
+        const baner = await Baner.findByPk(banerId)
+        if (!baner) {
+            return errorHandler(res, 404, "آیتمی یافت نشد !")
+        }
+        const filePath = `./public/images/baners/${baner.image}`
+        fs.unlinkSync(filePath)
+        await Baner.destroy({ where: { id: banerId } })
+        res.status(200).json({ message: "بنر با موفقیت حذف شد !" })
+    } catch (error) {
+        next(error)
+    }
+}
