@@ -13,6 +13,7 @@ const categoryRoutes = require("./routes/categoryRoute.js")
 const productRoutes = require("./routes/productRoute.js")
 const commentRoutes = require("./routes/commentRoute.js")
 const banerRoutes = require("./routes/banerRoute.js")
+const oredrRoutes = require("./routes/orderRoute.js")
 
 
 const app = express()
@@ -35,6 +36,7 @@ app.use('/api', categoryRoutes)
 app.use('/api', productRoutes)
 app.use('/api', commentRoutes)
 app.use('/api', banerRoutes)
+app.use('/api', oredrRoutes)
 
 
 
