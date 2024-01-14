@@ -3,7 +3,7 @@ const { errorHandler } = require("../lib/utils/errorHandler.js");
 const { paginationHandler } = require("../lib/utils/paginationHandler.js")
 const path = require('path')
 const fs = require('fs');
-const Baner = require("../models/BanerModel.js")
+const Baner = require("../models/banerModel.js")
 
 
 exports.getAllBaner = async (req, res, next) => {
