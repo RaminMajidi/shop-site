@@ -8,7 +8,7 @@ const Category = require("../models/categoryModel.js");
 const User = require("../models/userModel.js");
 const Order = require("../models/orderModel.js");
 const OrderItem = require("../models/orderItemModel.js");
-
+const { Op } = require("sequelize")
 
 exports.getAllOrder = async (req, res, next) => {
     try {
@@ -20,6 +20,30 @@ exports.getAllOrder = async (req, res, next) => {
             order: [['createdAt', sort]],
         })
         res.status(200).json({ orders, page, totalPage })
+    } catch (error) {
+        next(error)
+    }
+}
+
+
+exports.postNewOrder = async (req, res, next) => {
+    try {
+        var whereId = []
+        for (let q in req.body) {
+            whereId.push(req.body[q].productId)
+        }
+
+        const products = await Product.findAll({
+            where: { id: { [Op.or]: whereId } },
+            attributes: ['id', 'price', 'quantity']
+        })
+
+        let totatPrice = 0
+        products.map((item, index) => {
+            totatPrice += req.body[index].quantity * item.price
+        })
+        res.status(201).json({ products, totatPrice, message: "سفارش با موفقیت ثبت شد ." })
+
     } catch (error) {
         next(error)
     }

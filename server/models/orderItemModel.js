@@ -33,9 +33,6 @@ const OrderItem = db.define("orderItems", {
 
 )
 
-Order.hasOne(OrderItem)
-OrderItem.belongsTo(Order, { foreignKey: 'orderId' })
-
 Product.hasMany(OrderItem)
 OrderItem.belongsTo(Product,{foreignKey:"productId"})
 
