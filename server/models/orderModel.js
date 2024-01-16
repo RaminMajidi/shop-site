@@ -14,7 +14,8 @@ const Order = db.define("orders", {
     },
     status: {
         type: DataTypes.ENUM('REGISTERED', 'CANCELED', 'DELIVERED'),
-        defaultValue: 'REGISTERED'
+        defaultValue: 'REGISTERED',
+        allowNull: false
     },
     totalPrice: {
         type: DataTypes.FLOAT,
@@ -22,6 +23,22 @@ const Order = db.define("orders", {
     },
     refId: {
         type: DataTypes.STRING,
+        allowNull: false
+    },
+    state: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    city: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    address: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    zip: {
+        type: DataTypes.INTEGER,
         allowNull: false
     }
 },
