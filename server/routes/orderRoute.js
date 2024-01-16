@@ -2,7 +2,8 @@ const express = require("express");
 
 const {
     getAllOrder,
-    postNewOrder
+    postNewOrder,
+    getOredrById
 } = require("../controllers/orderController.js");
 
 const { verifyToken, authorize } = require("../middlewares/auth.js");
@@ -10,6 +11,7 @@ const { verifyToken, authorize } = require("../middlewares/auth.js");
 const router = express.Router()
 
 router.get('/allOrder', verifyToken, authorize('ADMIN', 'OPERATOR'), getAllOrder)
+router.get('/order/:userId/:orderId', verifyToken, authorize('ADMIN', 'OPERATOR'), getOredrById)
 router.post('/newOrder', verifyToken, authorize('CUSTOMER'), postNewOrder)
 
 module.exports = router

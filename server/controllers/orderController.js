@@ -26,6 +26,23 @@ exports.getAllOrder = async (req, res, next) => {
 }
 
 
+exports.getOredrById = async (req, res, next) => {
+    try {
+        const { userId, orderId } = req.params
+        const order = await Order.findOne({
+            where: { id: orderId, userId: userId }
+        })
+        if (!order) {
+            return errorHandler(res, 404, "آیتمی یافت نشد !")
+        }
+        res.status(200).json({ order })
+
+    } catch (error) {
+        error
+    }
+}
+
+
 exports.postNewOrder = async (req, res, next) => {
     try {
         var whereId = []

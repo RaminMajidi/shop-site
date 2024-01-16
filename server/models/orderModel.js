@@ -22,6 +22,7 @@ const Order = db.define("orders", {
     },
     refId: {
         type: DataTypes.STRING,
+        allowNull: false
     }
 },
     {
