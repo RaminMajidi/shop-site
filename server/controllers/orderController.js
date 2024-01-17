@@ -45,22 +45,58 @@ exports.getOredrById = async (req, res, next) => {
 
 exports.postNewOrder = async (req, res, next) => {
     try {
-        var whereId = []
-        for (let q in req.body) {
-            whereId.push(req.body[q].productId)
+
+        const checkOrder = await Order.findOne({
+            where: { userId: req.userId, status: 'REGISTERED' }
+        })
+
+        if (checkOrder) {
+            return errorHandler(res, 400, "شما سفارش پرداخت نشده دارید ابتدا وضعیت آن را مشخص و مجددا سفارش ثبت کنید !")
         }
 
-        const products = await Product.findAll({
-            where: { id: { [Op.or]: whereId } },
-            attributes: ['id', 'price', 'quantity']
-        })
+        const valid = await validationHandler(req, next)
+        if (valid) {
+            let whereId = []
+            for (let q in req.body.products) {
+                whereId.push(req.body.products[q].productId)
+            }
 
-        let totatPrice = 0
-        products.map((item, index) => {
-            totatPrice += req.body[index].quantity * item.price
-        })
-        res.status(201).json({ products, totatPrice, message: "سفارش با موفقیت ثبت شد ." })
+            const products = await Product.findAll({
+                where: { id: { [Op.or]: whereId } },
+                attributes: ['id', 'price', 'quantity']
+            })
 
+            let totatPrice = 0
+            products.map((item, index) => {
+                totatPrice += req.body.products[index].quantity * item.price
+            })
+
+            const { state, city, address, zip } = req.body
+
+            const newOrder = await Order.create({
+                userId: req.userId,
+                totalPrice: totatPrice,
+                state: state,
+                city: city,
+                address: address,
+                zip: zip
+            })
+
+            let items = []
+            await req.body.products.map((item, index) => {
+                let obj = {
+                    orderId: newOrder.id,
+                    productId: item.productId,
+                    quantity: item.quantity,
+                    price: products[index].price
+                }
+                items.push(obj)
+            })
+
+            await OrderItem.bulkCreate(items)
+
+            res.status(201).json({ message: "سفارش با موفقیت ثبت شد ." })
+        }
     } catch (error) {
         next(error)
     }

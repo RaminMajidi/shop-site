@@ -1,7 +1,7 @@
 const { Sequelize } = require("sequelize");
 const db = require("../config/DB.js");
 const User = require("./userModel.js");
-const OrderItem = require("./orderItemModel.js");
+
 
 
 const { DataTypes } = Sequelize;
@@ -13,7 +13,7 @@ const Order = db.define("orders", {
         allowNull: false,
     },
     status: {
-        type: DataTypes.ENUM('REGISTERED', 'CANCELED', 'DELIVERED'),
+        type: DataTypes.ENUM('REGISTERED','PAID', 'CANCELED', 'DELIVERED'),
         defaultValue: 'REGISTERED',
         allowNull: false
     },
@@ -22,8 +22,7 @@ const Order = db.define("orders", {
         allowNull: false
     },
     refId: {
-        type: DataTypes.STRING,
-        allowNull: false
+        type: DataTypes.STRING
     },
     state: {
         type: DataTypes.STRING,
@@ -34,7 +33,7 @@ const Order = db.define("orders", {
         allowNull: false
     },
     address: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT,
         allowNull: false
     },
     zip: {
