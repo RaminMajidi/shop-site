@@ -15,6 +15,7 @@ exports.getAllOrder = async (req, res, next) => {
         const count = await Order.count()
         const { page, limit, sort, offset, totalPage } = paginationHandler(req, res, count)
         const orders = await Order.findAll({
+            where: { status: req.query.status },
             offset: offset,
             limit: limit,
             order: [['createdAt', sort]],
