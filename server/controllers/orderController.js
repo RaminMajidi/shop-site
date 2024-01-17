@@ -96,6 +96,13 @@ exports.postNewOrder = async (req, res, next) => {
 
             await OrderItem.bulkCreate(items)
 
+            await whereId.map(async (item, index) => {
+                await Product.update(
+                    { quantity: products[index].quantity - req.body.products[index].quantity },
+                    { where: { id: item } }
+                )
+            })
+
             res.status(201).json({ message: "سفارش با موفقیت ثبت شد ." })
         }
     } catch (error) {
