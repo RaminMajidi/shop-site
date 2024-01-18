@@ -17,6 +17,7 @@ exports.verifyToken = async (req, res, next) => {
         req.userId = decoded.id;
         req.userName = decoded.name
         req.userRol = decoded.rol;
+        req.userEmail = decoded.email
         next()
     })
 

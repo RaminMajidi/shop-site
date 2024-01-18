@@ -45,9 +45,9 @@ exports.signUpUser = async (req, res, next) => {
 }
 
 exports.signInUser = async (req, res, next) => {
-    const valid = await validationHandler(req, next)
-    if (valid) {
-        try {
+    try {
+        const valid = await validationHandler(req, next)
+        if (valid) {
             const { email, password } = req.body
             const user = await User.findOne({
                 where: { email: email }
@@ -91,9 +91,9 @@ exports.signInUser = async (req, res, next) => {
                 message: "ورود موفقیت آمیز بود !"
             })
 
-        } catch (error) {
-            next(error)
         }
+    } catch (error) {
+        next(error)
     }
 }
 

@@ -8,7 +8,12 @@ const Category = require("../models/categoryModel.js");
 const User = require("../models/userModel.js");
 const Order = require("../models/orderModel.js");
 const OrderItem = require("../models/orderItemModel.js");
-const { Op } = require("sequelize")
+const { Op, where } = require("sequelize")
+const ZarinpalCheckout = require('zarinpal-checkout')
+
+var zarinpal = ZarinpalCheckout.create('xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx', true);
+
+
 
 exports.getAllOrder = async (req, res, next) => {
     try {
@@ -95,18 +100,78 @@ exports.postNewOrder = async (req, res, next) => {
             })
 
             await OrderItem.bulkCreate(items)
-
-            await whereId.map(async (item, index) => {
-                await Product.update(
-                    { quantity: products[index].quantity - req.body.products[index].quantity },
-                    { where: { id: item } }
-                )
-            })
-
-            res.status(201).json({ message: "سفارش با موفقیت ثبت شد ." })
+            res.status(201).json({ orderId: newOrder.id, message: "سفارش با موفقیت ثبت شد ." })
         }
     } catch (error) {
         next(error)
     }
 }
+
+exports.getPayment = async (req, res, next) => {
+    try {
+        const order = await Order.findOne({
+            where: { id: req.params.id },
+            attributes: ['id', 'totalPrice']
+        })
+
+        zarinpal.PaymentRequest({
+            Amount: order.totalPrice,
+            CallbackURL: `${req.protocol}://${req.get('host')}/checkPayment`,
+            Description: 'پرداخت صورت حساب',
+            Email: req.userEmail
+        }).then(response => {
+            console.log(response);
+            if (response.status == 100) {
+                res.redirect(response.url)
+            }
+        }).catch(err => next(err))
+
+    } catch (error) {
+        next(error)
+    }
+}
+
+
+exports.checkPayment = async (req, res, next) => {
+    console.log(req.query);
+    const authority = req.query.Authority;
+    const status = req.query.Status;
+
+    const order = await Order.findOne({
+        where: { userId: req.userId, status: "REGISTERED" },
+        attributes: ['id', 'totalPrice'],
+        include: [{
+            model: OrderItem,
+            attributes: ['id', 'productId', 'quantity'],
+        }],
+    })
+
+    if (status == 'OK') {
+        zarinpal.PaymentVerification({
+            Amount: order.totalPrice,
+            Authority: authority
+        }).then(response => {
+            if (response.status == 100) {
+                const updateOrder = Order.update(
+                    { refId: response.RefID, status: "PAID" },
+                    { where: { id: order.id } })
+            }
+        }).then(() => {
+            res.status(200).json({ message: "پرداخت موفقیت آمیز بود" })
+        }).catch(err => next(err))
+    }
+
+}
+
+
+
+
+
+// whereId.map(async (item, index) => {
+//     await Product.update(
+//         { quantity: products[index].quantity - req.body.products[index].quantity },
+//         { where: { id: item } }
+//     )
+// })
+
 
